@@ -7,7 +7,7 @@ def indent_line(code, level=1):
     return ""
 
 
-def import_to_def(module, src_path):
+def build_module_definition(module, src_path):
     src = [f"def {module}():"]
     src += list(map(indent_line, src_path.read_text().strip().split("\n")))
     return src + """
@@ -21,7 +21,7 @@ def parse_import(module):
     path = Path(".") / f"{module}.py"
     if not path.is_file():
         return [f"import {module}"]
-    return import_to_def(module, path) + [f"{module} = {module}()"]
+    return build_module_definition(module, path) + [f"{module} = {module}()"]
 
 
 def parse_from(module, vrbls):
@@ -30,7 +30,7 @@ def parse_from(module, vrbls):
         vrbls = ", ".join("{m} as {l}" if m != l else m for m, l in vrbls)
         return [f"from {module} import {vrbls}"]
     mns = f"{module}_namespace"
-    src = import_to_def(mns, path)
+    src = build_module_definition(mns, path)
     src.append(f"{mns} = {mns}()")
     for module_name, local_name in vrbls:
         src.append(f"{local_name} = {mns}.{module_name}")
