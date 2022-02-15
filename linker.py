@@ -7,18 +7,21 @@ def indent_line(code):
     return ""
 
 
-def parse_import(module):
-    path = Path(".") / f"{module}.py"
-    if not path.is_file():
-        return [f"import {module}"]
+def import_to_def(module, src_path):
     src = [f"def {module}():"]
-    src += list(map(indent_line, path.read_text().strip().split("\n")))
-    src += """
+    src += list(map(indent_line, src_path.read_text().strip().split("\n")))
+    return src + """
     local_module_namespace = __import__("types").SimpleNamespace()
     for variable, value in list(locals().items()):
         setattr(local_module_namespace, variable, value)
     return local_module_namespace""".split("\n")
-    return src + [f"{module} = {module}()"]
+
+
+def parse_import(module):
+    path = Path(".") / f"{module}.py"
+    if not path.is_file():
+        return [f"import {module}"]
+    return import_to_def(module, path) + [f"{module} = {module}()"]
 
 
 def link(source):
