@@ -24,3 +24,8 @@ def link(source):
             yield from parse_import(line.split(' ', 1)[1])
         else:
             yield line
+
+if __name__ == "__main__":
+    import sys
+    src, trgt = sys.argv[1], sys.argv[2]
+    Path(trgt).write_text('\n'.join(link(Path(src).read_text())))
