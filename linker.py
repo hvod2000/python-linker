@@ -1,9 +1,9 @@
 from pathlib import Path
 
 
-def indent_line(code):
+def indent_line(code, level=1):
     if code.strip():
-        return " " * 4 + code
+        return " " * (4 * level) + code
     return ""
 
 
